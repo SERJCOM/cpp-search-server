@@ -5,8 +5,10 @@
 
 
 #include <iostream>
+#include <map>
 
 using namespace std;
+
 
 bool sod(int a){
     bool b = false;
