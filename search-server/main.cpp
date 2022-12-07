@@ -61,7 +61,6 @@ public:
         ++document_count_;
         const vector<string> words = SplitIntoWordsNoStop(document);
         for(const string& i : words){
-            if(stop_words_.count(i)) continue;
             documents_[i][document_id] += 1.0 / words.size();
         }
         
@@ -146,28 +145,27 @@ private:
     vector<Document> FindAllDocuments(const Query& query) const {
         vector<Document> matched_documents;
         map<int, double> rel;
-        for(const string& i: query.plus_words){
-            if(!documents_.count(i)) continue;
+        for(const string& word: query.plus_words){
+            if(!documents_.count(word)) continue;
             
-            double ITF = IDFCalc(i);
-            for(const auto& [docid, tf] : documents_.at(i)){
-               rel[docid] += tf * ITF;
+            double IDF = IDFCalc(word);
+            for(const auto& [docid, tf] : documents_.at(word)){
+               rel[docid] += tf * IDF;
             }
             
         }
         
-        for(const string& i: query.minus_words){
-            if(!documents_.count(i)) continue;
+        for(const string& word: query.minus_words){
+            if(!documents_.count(word)) continue;
             
-            for(const auto& j : documents_.at(i)){
-                rel.erase(j.first);
+            for(const auto& [docid, tf] : documents_.at(word)){
+                rel.erase(docid);
             }
-            
         }
         
         
-        for(const auto& i : rel){
-            matched_documents.push_back({i.first, i.second});
+        for(const auto& [docid, relev] : rel){
+            matched_documents.push_back({docid, relev});
         }
         return matched_documents;
     }
