@@ -372,7 +372,7 @@ void TestAddingDocuments(){
     }
 }
 
-void TestStopWords(){
+void TestAddingStopWords(){
     const string content = "cat in the city"s;
     const string content1 = "dog in the city"s;
     const string content2 = "dog on the moon"s;
@@ -384,11 +384,11 @@ void TestStopWords(){
         server.AddDocument(2, content1,  DocumentStatus::ACTUAL, ratings);
         server.AddDocument(3, content2,  DocumentStatus::ACTUAL, ratings);
 
-        ASSERT_EQUAL(server.FindTopDocuments("the").size(), 0);
+        ASSERT(server.FindTopDocuments("the").empty());
     }
 }
 
-void TestMinusWorld(){
+void TestAddingMinusWords(){
     const string content = "cat in the city"s;
     const string content1 = "dog in the city"s;
     const string content2 = "dog on the moon"s;
@@ -404,62 +404,52 @@ void TestMinusWorld(){
     }
 }
 
-void TestRating(){
-    const string content = "cat in the city"s;
-    const string content1 = "dog in the city"s;
-    const vector<int> ratings = {1, 2, 3};
 
-    {
-        SearchServer server;
-        server.AddDocument(1, content,  DocumentStatus::ACTUAL, ratings);
-        server.AddDocument(2, content1,  DocumentStatus::ACTUAL, ratings);
-        ASSERT_EQUAL(server.FindTopDocuments("cat in the city")[0].id, 1);
-        ASSERT_EQUAL(server.FindTopDocuments("cat in the city")[1].id, 2);
-    }
-}
-
-void TestComputeRaiting(){
+void TestFilteringDocumentsByRating(){
     const string content = "cat in the city"s;
     const string content1 = "dog in the city"s;
     {
         SearchServer server;
-        server.AddDocument(1, content,  DocumentStatus::ACTUAL, {1,1,1});
-        server.AddDocument(2, content1,  DocumentStatus::ACTUAL, {1,2,3});
+        server.AddDocument(1, content, DocumentStatus::ACTUAL, {1,1,1});
+        server.AddDocument(2, content1, DocumentStatus::ACTUAL, {1,2,3});
         const auto res = server.FindTopDocuments("in the");
-        ASSERT_HINT(res[1].id == 1 && res[1].rating == 1 , "id of the some element equal 1 and raiting equal 1"s );
-        ASSERT_HINT(res[0].id == 2 && res[0].rating == 2 , "id of the some element equal 2 and raiting equal 2"s );
+        ASSERT_EQUAL(res.size(), 2);
+        ASSERT_HINT(res[1].id == 1 && res[1].rating == (1.0 + 1.0 + 1.0) / 3.0, "id of the some element equal 1 and raiting equal 1"s );
+        ASSERT_HINT(res[0].id == 2 && res[0].rating == (1.0 + 2.0 + 3.0) / 3.0, "id of the some element equal 2 and raiting equal 2"s );
     }
 }
 
-void TestFilter(){
+void TestFilteringDocumentsByPredicat(){
     const string content = "cat in the city"s;
     const string content1 = "dog in the city"s;
     {
         SearchServer server;
-        server.AddDocument(1, content,  DocumentStatus::ACTUAL, {1,1,1});
-        server.AddDocument(2, content1,  DocumentStatus::ACTUAL, {1,2,3});
+        server.AddDocument(1, content, DocumentStatus::ACTUAL, {1,1,1});
+        server.AddDocument(2, content1, DocumentStatus::ACTUAL, {1,2,3});
 
-        const auto res = server.FindTopDocuments("in the city", [](int id, DocumentStatus status, int rait){
-            return rait == 1;
+        const auto res = server.FindTopDocuments("in the city", [](int id, DocumentStatus status, int raiting){
+            return raiting == 1;
         });
 
         ASSERT_EQUAL(res.size(), 1);
+        ASSERT_EQUAL(res[0].id, 1);
     }
 }
 
 void TestSearchDocumentsByStatus(){
     const string content = "cat in the city"s;
-    const string content1 = "cat in the city"s;
     {
         SearchServer server;
         server.AddDocument(1, content,  DocumentStatus::ACTUAL, {1,1,1});
-        server.AddDocument(2, content1,  DocumentStatus::BANNED, {1,2,3});
+        server.AddDocument(2, content,  DocumentStatus::BANNED, {1,2,3});
 
-        ASSERT_EQUAL(server.FindTopDocuments("cat in the city"s, DocumentStatus::BANNED).size(), 1);
+        const auto temp = server.FindTopDocuments("cat in the city"s, DocumentStatus::BANNED);
+        ASSERT_EQUAL(temp.size(), 1);
+        ASSERT_EQUAL(temp[0].id, 2);
     }
 }
 
-void TestRelevance(){
+void TestCheckingTheRelevanceCount(){
     const string content = "cat in the city"s;
     const string content1 = "dog in the city"s;
     {
@@ -476,14 +466,13 @@ void TestRelevance(){
 void TestSearchServer() {
     RUN_TEST(TestExcludeStopWordsFromAddedDocumentContent);
     RUN_TEST(TestAddingDocuments);
-    RUN_TEST(TestStopWords);
-    RUN_TEST(TestRating);
-    RUN_TEST(TestComputeRaiting);
-    RUN_TEST(TestFilter);
+    RUN_TEST(TestAddingStopWords);
+    RUN_TEST(TestAddingMinusWords);
+    RUN_TEST(TestFilteringDocumentsByRating);
+    RUN_TEST(TestFilteringDocumentsByPredicat);
     RUN_TEST(TestSearchDocumentsByStatus);
-    RUN_TEST(TestRelevance);
+    RUN_TEST(TestCheckingTheRelevanceCount);
 }
-
 
 
 // --------- Окончание модульных тестов поисковой системы -----------
