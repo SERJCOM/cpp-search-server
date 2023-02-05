@@ -82,8 +82,11 @@ public:
     template <typename StringContainer>
     explicit SearchServer(const StringContainer& stop_words)
         : stop_words_(MakeUniqueNonEmptyStrings(stop_words)) {
-            for(const string& word : stop_words)
-            if(!IsValidWord(word)) throw invalid_argument("the word is not valid"s);
+            for(const string& word : stop_words){
+                if(!IsValidWord(word)) {
+                    throw invalid_argument("the word is not valid"s);
+                }
+            }
     }
 
     explicit SearchServer(const string& stop_words_text)
@@ -91,14 +94,13 @@ public:
             SplitIntoWords(stop_words_text))  // Invoke delegating constructor from string container
     {
     }
-    
-    inline static constexpr int INVALID_DOCUMENT_ID = -1;
 
     void AddDocument(int document_id, const string& document, DocumentStatus status,
                      const vector<int>& ratings) {
-        if(!IsValidWord(document)) throw invalid_argument("the word is not valid"s);
+        
         if(document_id < 0) throw invalid_argument("document_id is smaller than 0"s);
         if(documents_.count(document_id) >= 1) throw invalid_argument("the document already exist with such document_id");
+        if(!IsValidWord(document)) throw invalid_argument("the word is not valid"s);
         
         const vector<string> words = SplitIntoWordsNoStop(document);
         const double inv_word_count = 1.0 / words.size();
@@ -111,15 +113,6 @@ public:
 
     template <typename DocumentPredicate>
     vector<Document> FindTopDocuments(const string& raw_query, DocumentPredicate document_predicate) const {
-        
-        bool isTextAfterDash = true;
-        if(!IsValidWord(raw_query)) throw invalid_argument("the word is not valid"s);
-        for(const char i : raw_query){
-            if(!isTextAfterDash && i == '-') throw invalid_argument("invalid request: several '-'"s);
-            if(!isTextAfterDash && i != ' ') isTextAfterDash = true;
-            if(i == '-') isTextAfterDash = false;
-        }
-        if(!isTextAfterDash) throw invalid_argument("invalid request"s);
         
         const Query query = ParseQuery(raw_query);
         vector<Document> matched_documents = FindAllDocuments(query, document_predicate);
@@ -154,15 +147,6 @@ public:
     }
 
     tuple<vector<string>, DocumentStatus> MatchDocument(const string& raw_query, int document_id) const {
-        bool isTextAfterDash = true;
-        if(!IsValidWord(raw_query)) throw invalid_argument("the word is not valid"s);
-        for(const char i : raw_query){
-            if(!isTextAfterDash && i == '-') throw invalid_argument("invalid request: several '-'"s);
-            if(!isTextAfterDash && i != ' ') isTextAfterDash = true;
-            if(i == '-') isTextAfterDash = false;
-        }
-        if(!isTextAfterDash) throw invalid_argument("invalid request"s);
-        if(document_id < 0) throw invalid_argument("document_id is smaller than 0"s);
         
         const Query query = ParseQuery(raw_query);
         vector<string> matched_words;
@@ -188,9 +172,8 @@ public:
     
     
     int GetDocumentId(int index) const{
-        int ordinal_number = index ;
-        if(ordinal_number < 0 || ordinal_number >= documents_.size() ) throw out_of_range("the index out of range"s);
-        return index_documents_.at(ordinal_number );
+        if(index < 0 || index >= documents_.size() ) throw out_of_range("the index out of range"s);
+        return index_documents_.at(index);
     }
 
 private:
@@ -257,6 +240,16 @@ private:
     };
 
     Query ParseQuery(const string& text) const {
+        
+        bool isTextAfterDash = true;
+        if(!IsValidWord(text)) throw invalid_argument("the word is not valid"s);
+        for(const char i : text){
+            if(!isTextAfterDash && i == '-') throw invalid_argument("invalid request: several '-'"s);
+            if(!isTextAfterDash && i != ' ') isTextAfterDash = true;
+            if(i == '-') isTextAfterDash = false;
+        }
+        if(!isTextAfterDash) throw invalid_argument("invalid request"s);
+
         Query query;
         for (const string& word : SplitIntoWords(text)) {
             const QueryWord query_word = ParseQueryWord(word);
