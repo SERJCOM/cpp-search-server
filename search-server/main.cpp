@@ -231,10 +231,10 @@ private:
             text = text.substr(1);
         }
 
-        if (text[0] == '-' && is_minus){
+        if (text[0] == '-' && is_minus == true){
             throw invalid_argument("invalid request: several '-'"s);
         }
-        if(text.size() == 1 && is_minus){
+        if(text.size() == 1 && is_minus == true){
             throw invalid_argument("invalid request"s);
         }
         if(!IsValidWord(text)){
