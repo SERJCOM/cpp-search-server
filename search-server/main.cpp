@@ -226,11 +226,21 @@ private:
 
     QueryWord ParseQueryWord(string text) const {
         bool is_minus = false;
-        // testtestestest
         if (text[0] == '-') {
             is_minus = true;
             text = text.substr(1);
         }
+
+        if (text[0] == '-' && is_minus){
+            throw invalid_argument("invalid request: several '-'"s);
+        }
+        if(text.size() == 1 && is_minus){
+            throw invalid_argument("invalid request"s);
+        }
+        if(!IsValidWord(text)){
+            throw invalid_argument("the word is not valid"s);
+        }
+
         return {text, is_minus, IsStopWord(text)};
     }
 
@@ -240,15 +250,6 @@ private:
     };
 
     Query ParseQuery(const string& text) const {
-        
-        bool isTextAfterDash = true;
-        if(!IsValidWord(text)) throw invalid_argument("the word is not valid"s);
-        for(const char i : text){
-            if(!isTextAfterDash && i == '-') throw invalid_argument("invalid request: several '-'"s);
-            if(!isTextAfterDash && i != ' ') isTextAfterDash = true;
-            if(i == '-') isTextAfterDash = false;
-        }
-        if(!isTextAfterDash) throw invalid_argument("invalid request"s);
 
         Query query;
         for (const string& word : SplitIntoWords(text)) {
