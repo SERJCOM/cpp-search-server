@@ -434,6 +434,7 @@ private:
 
     void AddQueryResult(const QueryResult& query){
         if(requests_.size() >= min_in_day_){
+            
             QueryResult results = requests_.front();
             requests_.pop_front();
             if(results.count_documents == 0){
@@ -449,7 +450,7 @@ private:
     
     deque<QueryResult> requests_;
     const static int min_in_day_ = 1440;
-    const SearchServer server_;
+    const SearchServer& server_;
     int count_ = 0;
 };
 
@@ -464,8 +465,7 @@ int main() {
     RequestQueue request_queue(search_server);
     // 1439 запросов с нулевым результатом
     for (int i = 0; i < 1439; ++i) {
-        
-        request_queue.AddFindRequest("curly dog"s);
+        request_queue.AddFindRequest("empty request"s);
     }
     // все еще 1439 запросов с нулевым результатом
     request_queue.AddFindRequest("curly dog"s);
@@ -474,6 +474,5 @@ int main() {
     // первый запрос удален, 1437 запросов с нулевым результатом
     request_queue.AddFindRequest("sparrow"s);
     cout << "Total empty requests: "s << request_queue.GetNoResultRequests() << endl;
-
     return 0;
 }
