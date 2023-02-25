@@ -13,19 +13,12 @@ int main() {
     search_server.AddDocument(3, "big cat fancy collar "s, DocumentStatus::ACTUAL, {1, 2, 8});
     search_server.AddDocument(4, "big dog sparrow Eugene"s, DocumentStatus::ACTUAL, {1, 3, 2});
     search_server.AddDocument(5, "big dog sparrow Vasiliy"s, DocumentStatus::ACTUAL, {1, 1, 1});
-    RequestQueue request_queue(search_server);
-    // 1439 запросов с нулевым результатом
-    for (int i = 0; i < 1439; ++i) {
-        request_queue.AddFindRequest("curly dog"s);
+    for(int i = 6; i < 1000; i++){
+        search_server.AddDocument(i, "curly dog "s + std::to_string(i), DocumentStatus::ACTUAL, {1, 1, 1});
     }
-    // все еще 1439 запросов с нулевым результатом
-    request_queue.AddFindRequest("curly dog"s);
-    // новые сутки, первый запрос удален, 1438 запросов с нулевым результатом
-    request_queue.AddFindRequest("big collar"s);
-    // первый запрос удален, 1437 запросов с нулевым результатом
-    request_queue.AddFindRequest("sparrow"s);
-    cout << "Total empty requests: "s << request_queue.GetNoResultRequests() << endl;
-    request_queue.AddFindRequest("curly dog"s);
-    cout << "Total empty requests: "s << request_queue.GetNoResultRequests() << endl;
+
+    for(auto i : search_server.FindTopDocuments("curly")){
+        cout << i << endl;
+    }
     return 0;
 }

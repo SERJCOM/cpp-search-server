@@ -1,5 +1,6 @@
 #include "search_server.h"
 
+
 void SearchServer::AddDocument(int document_id, const std::string& document, DocumentStatus status,
                  const std::vector<int>& ratings) {
     if ((document_id < 0) || (documents_.count(document_id) > 0)) {
@@ -37,6 +38,9 @@ int SearchServer::GetDocumentId(int index) const {
 
 std::tuple<std::vector<std::string>, DocumentStatus> SearchServer::MatchDocument(const std::string& raw_query,
                                                                    int document_id) const {
+
+    LOG_DURATION_STREAM("Operation time"s, std::cout);
+    
     const auto query = ParseQuery(raw_query);
 
     std::vector<std::string> matched_words;
