@@ -22,6 +22,11 @@ public:
     template <typename StringContainer>
     explicit SearchServer(const StringContainer& stop_words);
 
+    explicit SearchServer()
+        : SearchServer(
+            SplitIntoWords(" "s))  // Invoke delegating constructor from string container
+    {}
+
     explicit SearchServer(const std::string& stop_words_text)
         : SearchServer(
             SplitIntoWords(stop_words_text))  // Invoke delegating constructor from string container
@@ -40,7 +45,12 @@ public:
 
     int GetDocumentCount() const;
 
-    int GetDocumentId(int index) const ;
+    std::vector<int>::iterator begin();
+    std::vector<int>::iterator end();
+
+    void RemoveDocument(int document_id);
+
+    const std::map<std::string, double>& GetWordFrequencies(int document_id) const;
 
     std::tuple<std::vector<std::string>, DocumentStatus> MatchDocument(const std::string& raw_query,
                                                         int document_id) const ;
@@ -51,9 +61,28 @@ private:
         DocumentStatus status;
     };
     const std::set<std::string> stop_words_;
-    std::map<std::string, std::map<int, double>> word_to_document_freqs_;
+    std::map<std::string, std::map<int, double>> word_to_document_freqs_; // O(logW + logN)
     std::map<int, DocumentData> documents_;
     std::vector<int> document_ids_;
+    std::map<int, std::map<std::string, double>> word_to_freqs_; // document_id to word to freqs  O(log N) + O(log W) = O(logN + logW)
+    std::map<std::string, double> empty_map;
+    //std::map<int, std::vector<int>> id_to_words_; // O(logN + w)
+
+    /*
+    находим мапу слов по айди в мапе; O(logN)
+    проходимя в цикле по этой мапе; O(w) так как взятие итератора конст и таких итераций w 
+    находим слово в первой мапе и сразу находим и удаляем айди; O(logW + logN) + arm O(1) = O(logW + logN)
+
+    Итог:
+        O(logN) + O(w) * O(logN + logW) = O(logN) + O(w(logN + logW)) => так как O(logN) самая лучшая сложность то ее не учитываем => O(w(logN + logW))
+
+        первый вариант:
+    */
+
+   /*
+
+   */
+
 
     bool IsStopWord(const std::string& word) const ;
 
@@ -157,3 +186,10 @@ std::vector<Document> SearchServer::FindAllDocuments(const Query& query,
 }
 
 
+
+
+
+/*
+
+
+*/

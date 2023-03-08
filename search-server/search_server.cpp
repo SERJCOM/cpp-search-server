@@ -1,6 +1,7 @@
 #include "search_server.h"
 
 
+
 void SearchServer::AddDocument(int document_id, const std::string& document, DocumentStatus status,
                  const std::vector<int>& ratings) {
     if ((document_id < 0) || (documents_.count(document_id) > 0)) {
@@ -11,6 +12,7 @@ void SearchServer::AddDocument(int document_id, const std::string& document, Doc
     const double inv_word_count = 1.0 / words.size();
     for (const std::string& word : words) {
         word_to_document_freqs_[word][document_id] += inv_word_count;
+        word_to_freqs_[document_id][word] += inv_word_count;
     }
     documents_.emplace(document_id, DocumentData{ComputeAverageRating(ratings), status});
     document_ids_.push_back(document_id);
@@ -31,9 +33,21 @@ int SearchServer::GetDocumentCount() const {
     return documents_.size();
 }
 
-int SearchServer::GetDocumentId(int index) const {
-    return document_ids_.at(index);
+std::vector<int>::iterator SearchServer::begin(){
+    return document_ids_.begin();
 }
+
+std::vector<int>::iterator SearchServer::end(){
+    return document_ids_.end();
+}
+
+ const std::map<std::string, double>& SearchServer::GetWordFrequencies(int document_id) const {
+    if(word_to_freqs_.count(document_id) == 0){
+        return empty_map;
+    }
+
+    return word_to_freqs_.at(document_id); // O(log N)
+ }
 
 
 std::tuple<std::vector<std::string>, DocumentStatus> SearchServer::MatchDocument(const std::string& raw_query,
@@ -83,6 +97,23 @@ std::vector<std::string> SearchServer::SplitIntoWordsNoStop(const std::string& t
     return words;
 }
 
+
+void SearchServer::RemoveDocument(int document_id){
+
+    auto word_freq = word_to_freqs_[document_id]; //  O(log N)   нашли мапу слово-частота 
+
+    for(const auto& word : word_freq){  // O(w)   
+        word_to_document_freqs_[word.first].erase(document_id);  // находим слово и удаляем от туда айди  O(log W) + амор O(1)
+    }
+
+    auto it = std::find(document_ids_.begin(), document_ids_.end(), document_id);
+    //std::cout << *it <<  " " <<  document_id << " " << document_ids_.size() << std::endl;
+    document_ids_.erase(it); // log(N)
+
+    documents_.erase( documents_.find(document_id));
+
+    //std::cout << "size: " << document_ids_.size() << std::endl;
+}
 
 
 
@@ -141,3 +172,26 @@ int SearchServer::ComputeAverageRating(const std::vector<int>& ratings) {
     }
     return rating_sum / static_cast<int>(ratings.size());
 }
+
+
+
+/*
+цель: O(wN(logN+logW))
+
+в цикле проходимся по всем документам; O(N)
+
+берем мапу слов-частота O(logN)
+и преобразуем в сет O(w)
+
+O(N(logN + w))
+
+в цикле проходимся по вектору уже добавленных (сетов) векторов потому что что мапа уже отсортирована и добавлять новые значения а потом сортировать слишком долго; O(N)
+и смотрим на совпадение (сетов) векторов.  // O(N). Скорей всего векторы различаются 
+
+если совпадения нет, то добавляем в вектор новый сет // O(1)
+если есть совпадение то добавляем в другой вектор айди для последущего удаления // O(1)
+
+
+проходим по новому вектору и удаляем документы которые там находятся // O(Nw(logN+logW))
+
+*/
