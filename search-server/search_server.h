@@ -66,22 +66,6 @@ private:
     std::vector<int> document_ids_;
     std::map<int, std::map<std::string, double>> word_to_freqs_; // document_id to word to freqs  O(log N) + O(log W) = O(logN + logW)
     std::map<std::string, double> empty_map;
-    //std::map<int, std::vector<int>> id_to_words_; // O(logN + w)
-
-    /*
-    находим мапу слов по айди в мапе; O(logN)
-    проходимя в цикле по этой мапе; O(w) так как взятие итератора конст и таких итераций w 
-    находим слово в первой мапе и сразу находим и удаляем айди; O(logW + logN) + arm O(1) = O(logW + logN)
-
-    Итог:
-        O(logN) + O(w) * O(logN + logW) = O(logN) + O(w(logN + logW)) => так как O(logN) самая лучшая сложность то ее не учитываем => O(w(logN + logW))
-
-        первый вариант:
-    */
-
-   /*
-
-   */
 
 
     bool IsStopWord(const std::string& word) const ;
@@ -130,7 +114,7 @@ template <typename DocumentPredicate>
 std::vector<Document> SearchServer::FindTopDocuments(const std::string& raw_query,
                                     DocumentPredicate document_predicate) const {
 
-    LOG_DURATION_STREAM("Operation time"s, std::cout);
+    //LOG_DURATION_STREAM("Operation time"s, std::cout);
 
     const auto query = ParseQuery(raw_query);
 

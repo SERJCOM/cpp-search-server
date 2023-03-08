@@ -53,7 +53,7 @@ std::vector<int>::iterator SearchServer::end(){
 std::tuple<std::vector<std::string>, DocumentStatus> SearchServer::MatchDocument(const std::string& raw_query,
                                                                    int document_id) const {
 
-    LOG_DURATION_STREAM("Operation time"s, std::cout);
+    //LOG_DURATION_STREAM("Operation time"s, std::cout);
     
     const auto query = ParseQuery(raw_query);
 
@@ -112,7 +112,7 @@ void SearchServer::RemoveDocument(int document_id){
 
     documents_.erase( documents_.find(document_id));
 
-    //std::cout << "size: " << document_ids_.size() << std::endl;
+    word_to_freqs_.erase(word_to_freqs_.find(document_id));
 }
 
 
@@ -175,23 +175,3 @@ int SearchServer::ComputeAverageRating(const std::vector<int>& ratings) {
 
 
 
-/*
-цель: O(wN(logN+logW))
-
-в цикле проходимся по всем документам; O(N)
-
-берем мапу слов-частота O(logN)
-и преобразуем в сет O(w)
-
-O(N(logN + w))
-
-в цикле проходимся по вектору уже добавленных (сетов) векторов потому что что мапа уже отсортирована и добавлять новые значения а потом сортировать слишком долго; O(N)
-и смотрим на совпадение (сетов) векторов.  // O(N). Скорей всего векторы различаются 
-
-если совпадения нет, то добавляем в вектор новый сет // O(1)
-если есть совпадение то добавляем в другой вектор айди для последущего удаления // O(1)
-
-
-проходим по новому вектору и удаляем документы которые там находятся // O(Nw(logN+logW))
-
-*/
