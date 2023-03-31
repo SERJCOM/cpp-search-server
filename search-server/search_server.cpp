@@ -1,5 +1,5 @@
 #include "search_server.h"
-
+#include <numeric>
 
 
 void SearchServer::AddDocument(int document_id, const std::string& document, DocumentStatus status,
@@ -167,9 +167,10 @@ int SearchServer::ComputeAverageRating(const std::vector<int>& ratings) {
         return 0;
     }
     int rating_sum = 0;
-    for (const int rating : ratings) {
-        rating_sum += rating;
-    }
+    std::accumulate(ratings.begin(), ratings.end(), 0);
+    // for (const int rating : ratings) {
+    //     rating_sum += rating;
+    // }
     return rating_sum / static_cast<int>(ratings.size());
 }
 
