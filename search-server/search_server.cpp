@@ -15,7 +15,7 @@ void SearchServer::AddDocument(int document_id, const std::string& document, Doc
         word_to_freqs_[document_id][word] += inv_word_count;
     }
     documents_.emplace(document_id, DocumentData{ComputeAverageRating(ratings), status});
-    document_ids_.push_back(document_id);
+    document_ids_.insert(document_id);
 }
 
 std::vector<Document> SearchServer::FindTopDocuments(const std::string& raw_query, DocumentStatus status) const {
@@ -33,11 +33,11 @@ int SearchServer::GetDocumentCount() const {
     return documents_.size();
 }
 
-std::vector<int>::iterator SearchServer::begin(){
+std::set<int>::iterator SearchServer::begin(){
     return document_ids_.begin();
 }
 
-std::vector<int>::iterator SearchServer::end(){
+std::set<int>::iterator SearchServer::end(){
     return document_ids_.end();
 }
 

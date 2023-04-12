@@ -13,6 +13,8 @@
 #include "read_input_functions.h"
 #include "log_duration.h"
 #include <execution>
+#include <string_view>
+#include <set>
 
 const int MAX_RESULT_DOCUMENT_COUNT = 5;
 
@@ -46,8 +48,8 @@ public:
 
     int GetDocumentCount() const;
 
-    std::vector<int>::iterator begin();
-    std::vector<int>::iterator end();
+    std::set<int>::iterator begin();
+    std::set<int>::iterator end();
 
 
     const std::map<std::string, double>& GetWordFrequencies(int document_id) const;
@@ -70,7 +72,7 @@ private:
     const std::set<std::string> stop_words_;
     std::map<std::string, std::map<int, double>> word_to_document_freqs_; // O(logW + logN)
     std::map<int, DocumentData> documents_;
-    std::vector<int> document_ids_;
+    std::set<int> document_ids_;
     std::map<int, std::map<std::string, double>> word_to_freqs_; // document_id to word to freqs  O(log N) + O(log W) = O(logN + logW)
     std::map<std::string, double> empty_map;
 
@@ -179,17 +181,19 @@ std::vector<Document> SearchServer::FindAllDocuments(const Query& query,
 template<typename ExecutionPolicy>
 void SearchServer::RemoveDocument(ExecutionPolicy policy, int document_id){
 
-    auto word_freq = word_to_freqs_[document_id]; //  O(log N)   нашли мапу слово-частота 
+    auto& word_freq = word_to_freqs_[document_id]; //  O(log N)   нашли мапу слово-частота 
 
 
     std::vector<std::string> v_words(word_freq.size());
     //v_words.reserve(word_freq.size());
 
-    std::transform(policy, word_freq.begin(), word_freq.end(), v_words.begin(), [](auto& w_f){
-      return w_f.first;                                                                            
+    std::transform(policy, word_freq.begin(), word_freq.end(), v_words.begin(), [](auto& word){
+      return word.first;                                                                            
     });
 
-    std::for_each(policy, v_words.begin(), v_words.end(), [&](std::string& word){
+    std::for_each(policy, v_words.begin(), v_words.end(), [&](std::string word){
+
+        
         word_to_document_freqs_[word].erase(document_id);
     });
 
