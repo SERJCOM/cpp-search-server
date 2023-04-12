@@ -12,6 +12,8 @@
 #include "string_processing.h"
 #include "read_input_functions.h"
 #include "log_duration.h"
+#include <execution>
+
 
 const int MAX_RESULT_DOCUMENT_COUNT = 5;
 
@@ -48,7 +50,12 @@ public:
     std::vector<int>::iterator begin();
     std::vector<int>::iterator end();
 
-    void RemoveDocument(int document_id);
+    template<typename ExecutionPolicy>
+    void RemoveDocument(ExecutionPolicy policy, int document_id);
+
+    void RemoveDocument( int document_id){
+        RemoveDocument(std::execution::seq, document_id);
+    }
 
     const std::map<std::string, double>& GetWordFrequencies(int document_id) const;
 
@@ -169,6 +176,37 @@ std::vector<Document> SearchServer::FindAllDocuments(const Query& query,
     return matched_documents;
 }
 
+
+
+template<typename ExecutionPolicy>
+void SearchServer::RemoveDocument(ExecutionPolicy policy, int document_id){
+
+    auto word_freq = word_to_freqs_[document_id]; //  O(log N)   нашли мапу слово-частота 
+
+
+    std::vector<std::string> v_words(word_freq.size());
+    //v_words.reserve(word_freq.size());
+
+    std::transform(policy, word_freq.begin(), word_freq.end(), v_words.begin(), [](auto& w_f){
+      return w_f.first;                                                                            
+    });
+
+    std::for_each(policy, v_words.begin(), v_words.end(), [&](std::string& word){
+        word_to_document_freqs_[word].erase(document_id);
+    });
+
+    // for(const auto& word : word_freq){  // O(w)   
+    //     word_to_document_freqs_[word.first].erase(document_id);  // находим слово и удаляем от туда айди  O(log W) + амор O(1)
+    // }
+
+    auto it = std::find(policy, document_ids_.begin(), document_ids_.end(), document_id);
+    //std::cout << *it <<  " " <<  document_id << " " << document_ids_.size() << std::endl;
+    document_ids_.erase(it); // log(N)
+
+    documents_.erase( documents_.find(document_id));
+
+    word_to_freqs_.erase(word_to_freqs_.find(document_id));
+}
 
 
 
