@@ -1,0 +1,3 @@
+/home/sergei/prog/practicum/cpp-search-server/build/CMakeFiles/Debug.dir
+/home/sergei/prog/practicum/cpp-search-server/build/CMakeFiles/edit_cache.dir
+/home/sergei/prog/practicum/cpp-search-server/build/CMakeFiles/rebuild_cache.dir

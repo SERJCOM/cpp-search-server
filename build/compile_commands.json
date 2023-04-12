@@ -1,0 +1,37 @@
+[
+{
+  "directory": "/home/sergei/prog/practicum/cpp-search-server/build",
+  "command": "/usr/bin/c++   -g -std=gnu++17 -o CMakeFiles/Debug.dir/document.cpp.o -c /home/sergei/prog/practicum/cpp-search-server/search-server/document.cpp",
+  "file": "/home/sergei/prog/practicum/cpp-search-server/search-server/document.cpp"
+},
+{
+  "directory": "/home/sergei/prog/practicum/cpp-search-server/build",
+  "command": "/usr/bin/c++   -g -std=gnu++17 -o CMakeFiles/Debug.dir/main.cpp.o -c /home/sergei/prog/practicum/cpp-search-server/search-server/main.cpp",
+  "file": "/home/sergei/prog/practicum/cpp-search-server/search-server/main.cpp"
+},
+{
+  "directory": "/home/sergei/prog/practicum/cpp-search-server/build",
+  "command": "/usr/bin/c++   -g -std=gnu++17 -o CMakeFiles/Debug.dir/read_input_functions.cpp.o -c /home/sergei/prog/practicum/cpp-search-server/search-server/read_input_functions.cpp",
+  "file": "/home/sergei/prog/practicum/cpp-search-server/search-server/read_input_functions.cpp"
+},
+{
+  "directory": "/home/sergei/prog/practicum/cpp-search-server/build",
+  "command": "/usr/bin/c++   -g -std=gnu++17 -o CMakeFiles/Debug.dir/request_queue.cpp.o -c /home/sergei/prog/practicum/cpp-search-server/search-server/request_queue.cpp",
+  "file": "/home/sergei/prog/practicum/cpp-search-server/search-server/request_queue.cpp"
+},
+{
+  "directory": "/home/sergei/prog/practicum/cpp-search-server/build",
+  "command": "/usr/bin/c++   -g -std=gnu++17 -o CMakeFiles/Debug.dir/search_server.cpp.o -c /home/sergei/prog/practicum/cpp-search-server/search-server/search_server.cpp",
+  "file": "/home/sergei/prog/practicum/cpp-search-server/search-server/search_server.cpp"
+},
+{
+  "directory": "/home/sergei/prog/practicum/cpp-search-server/build",
+  "command": "/usr/bin/c++   -g -std=gnu++17 -o CMakeFiles/Debug.dir/string_processing.cpp.o -c /home/sergei/prog/practicum/cpp-search-server/search-server/string_processing.cpp",
+  "file": "/home/sergei/prog/practicum/cpp-search-server/search-server/string_processing.cpp"
+},
+{
+  "directory": "/home/sergei/prog/practicum/cpp-search-server/build",
+  "command": "/usr/bin/c++   -g -std=gnu++17 -o CMakeFiles/Debug.dir/remove_duplicates.cpp.o -c /home/sergei/prog/practicum/cpp-search-server/search-server/remove_duplicates.cpp",
+  "file": "/home/sergei/prog/practicum/cpp-search-server/search-server/remove_duplicates.cpp"
+}
+]
