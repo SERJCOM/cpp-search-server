@@ -1,5 +1,5 @@
 #include "search_server.h"
-#include <numeric>
+
 
 
 void SearchServer::AddDocument(int document_id, const std::string& document, DocumentStatus status,
@@ -98,24 +98,6 @@ std::vector<std::string> SearchServer::SplitIntoWordsNoStop(const std::string& t
 }
 
 
-// void SearchServer::RemoveDocument(int document_id){
-
-//     auto word_freq = word_to_freqs_[document_id]; //  O(log N)   нашли мапу слово-частота 
-
-//     for(const auto& word : word_freq){  // O(w)   
-//         word_to_document_freqs_[word.first].erase(document_id);  // находим слово и удаляем от туда айди  O(log W) + амор O(1)
-//     }
-
-//     auto it = std::find(document_ids_.begin(), document_ids_.end(), document_id);
-//     //std::cout << *it <<  " " <<  document_id << " " << document_ids_.size() << std::endl;
-//     document_ids_.erase(it); // log(N)
-
-//     documents_.erase( documents_.find(document_id));
-
-//     word_to_freqs_.erase(word_to_freqs_.find(document_id));
-// }
-
-
 
 
 
@@ -170,10 +152,9 @@ int SearchServer::ComputeAverageRating(const std::vector<int>& ratings) {
         return 0;
     }
     int rating_sum = 0;
-    std::accumulate(ratings.begin(), ratings.end(), 0);
-    // for (const int rating : ratings) {
-    //     rating_sum += rating;
-    // }
+    for (const int rating : ratings) {
+        rating_sum += rating;
+    }
     return rating_sum / static_cast<int>(ratings.size());
 }
 

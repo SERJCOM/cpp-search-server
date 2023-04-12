@@ -14,7 +14,6 @@
 #include "log_duration.h"
 #include <execution>
 
-
 const int MAX_RESULT_DOCUMENT_COUNT = 5;
 
 using namespace std::literals;
@@ -50,18 +49,19 @@ public:
     std::vector<int>::iterator begin();
     std::vector<int>::iterator end();
 
-    template<typename ExecutionPolicy>
-    void RemoveDocument(ExecutionPolicy policy, int document_id);
-
-    void RemoveDocument( int document_id){
-        RemoveDocument(std::execution::seq, document_id);
-    }
 
     const std::map<std::string, double>& GetWordFrequencies(int document_id) const;
 
     std::tuple<std::vector<std::string>, DocumentStatus> MatchDocument(const std::string& raw_query,
                                                         int document_id) const ;
 
+    template<typename ExecutionPolicy>
+    void RemoveDocument(ExecutionPolicy policy, int document_id);
+
+    void RemoveDocument( int document_id){
+        RemoveDocument(std::execution::seq, document_id);
+    }
+    
 private:
     struct DocumentData {
         int rating;
@@ -176,8 +176,6 @@ std::vector<Document> SearchServer::FindAllDocuments(const Query& query,
     return matched_documents;
 }
 
-
-
 template<typename ExecutionPolicy>
 void SearchServer::RemoveDocument(ExecutionPolicy policy, int document_id){
 
@@ -210,8 +208,3 @@ void SearchServer::RemoveDocument(ExecutionPolicy policy, int document_id){
 
 
 
-
-/*
-
-
-*/
