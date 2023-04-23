@@ -1,6 +1,6 @@
 #include "request_queue.h"
 
-std::vector<Document> RequestQueue::AddFindRequest(const std::string& raw_query, DocumentStatus status) {
+std::vector<Document> RequestQueue::AddFindRequest(std::string_view raw_query, DocumentStatus status) {
     std::vector<Document> temp = server_.FindTopDocuments(raw_query, status);
     QueryResult temp_query;
     temp_query.count_documents = temp.size();
@@ -8,7 +8,7 @@ std::vector<Document> RequestQueue::AddFindRequest(const std::string& raw_query,
     return temp;
 }
 
-std::vector<Document> RequestQueue::AddFindRequest(const std::string& raw_query) {
+std::vector<Document> RequestQueue::AddFindRequest(std::string_view raw_query) {
     std::vector<Document> temp = server_.FindTopDocuments(raw_query);
     QueryResult temp_query;
     temp_query.count_documents = temp.size();

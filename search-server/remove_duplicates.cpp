@@ -4,13 +4,13 @@ void RemoveDuplicates(SearchServer& search_server){
 
     using namespace std;
 
-    std::vector<std::vector<string>> words_id; // size - N
+    std::vector<std::vector<string_view>> words_id; // size - N
 
     vector<int>  documents_id_to_delete;
 
     for(const int document_id : search_server){         // O(N)
-        std::map<std::string, double> word_to_freq = search_server.GetWordFrequencies(document_id); // O(logN)   
-        std::vector<string> words_; 
+        std::map<std::string_view, double> word_to_freq = search_server.GetWordFrequencies(document_id); // O(logN)   
+        std::vector<string_view> words_; 
         for(const auto& [word, freq] : word_to_freq){
             words_.push_back(word);
         }

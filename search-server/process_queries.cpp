@@ -27,17 +27,15 @@ std::vector<Document> ProcessQueriesJoined(
     auto temp = ProcessQueries(search_server, queries);
     std::vector<Document> result;
     result.reserve(temp.size() * MAX_RESULT_DOCUMENT_COUNT);
-    // std::transform(std::execution::par,temp.begin(), temp.end(), result.begin(), [](const std::vector<Document>& vec){
-    //     return std::list<Document>(vec.begin(), vec.end());
-    // });
+
 
     for(const auto& vectors : temp){
-        //result.insert(result.end(), result.begin(), vectors.end());
         result.insert(result.end(), vectors.begin(), vectors.end());
     }
 
     return result;
 
 }
+
 
 
