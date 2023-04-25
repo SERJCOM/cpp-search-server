@@ -23,16 +23,6 @@ void SearchServer::AddDocument(int document_id, std::string_view document, Docum
     document_ids_.insert(document_id);
 }
 
-std::vector<Document> SearchServer::FindTopDocuments( std::string_view raw_query, DocumentStatus status) const {
-    return FindTopDocuments(
-        raw_query, [status](int document_id, DocumentStatus document_status, int rating) {
-            return document_status == status;
-        });
-}
-
-std::vector<Document> SearchServer::FindTopDocuments(std::string_view raw_query) const {
-    return FindTopDocuments(raw_query, DocumentStatus::ACTUAL);
-}
 
 int SearchServer::GetDocumentCount() const {
     return documents_.size();
@@ -101,10 +91,8 @@ SearchServer::Query SearchServer::ParseQuery(std::string_view text) const {
         const auto query_word = ParseQueryWord(word);
         if (!query_word.is_stop) {
             if (query_word.is_minus) {
-                //if(std::find(result.minus_words.begin(), result.minus_words.end(), query_word.data) == result.minus_words.end())
                 result.minus_words.push_back(query_word.data);
             } else {
-                //if(std::find(result.plus_words.begin(), result.plus_words.end(), query_word.data) == result.plus_words.end())
                 result.plus_words.push_back(query_word.data);
             }
         }
@@ -124,23 +112,13 @@ SearchServer::Query SearchServer::ParseQuery(std::string_view text) const {
 SearchServer::Query SearchServer::ParseQuerySimple(std::string_view text) const {
     Query result;
 
-    
-
-    // std::for_each(temp.begin(), temp.end(), [this](const std::string& word){
-    //     dictionary_.insert(word);
-    // });
-
     for (std::string_view word : SplitIntoWordsView(text)) {
-
-        //auto it = dictionary_.insert(word);
 
         const auto query_word = ParseQueryWord(word);
         if (!query_word.is_stop) {
             if (query_word.is_minus) {
-                //if(std::find(result.minus_words.begin(), result.minus_words.end(), query_word.data) == result.minus_words.end())
                 result.minus_words.push_back(query_word.data);
             } else {
-                //if(std::find(result.plus_words.begin(), result.plus_words.end(), query_word.data) == result.plus_words.end())
                 result.plus_words.push_back(query_word.data);
             }
         }
@@ -178,9 +156,7 @@ SearchServer::MatchDocument(std::execution::parallel_policy policy, std::string_
     //std::string temp_str(raw_query);
     auto query = ParseQuerySimple(raw_query);
 
-
     std::vector<std::string_view> matched_words(query.plus_words.size());
-
 
     if(std::any_of(query.minus_words.begin(), query.minus_words.end(), [this, document_id](std::string_view word){
         return word_to_document_freqs_.at(word).count(document_id);

@@ -12,27 +12,40 @@
 
 class LogDuration {
 public:
-    // заменим имя типа std::chrono::steady_clock
-    // с помощью using для удобства
+
     using Clock = std::chrono::steady_clock;
 
-    //LogDuration(const std::string& id) :id_(id), flow_(std::cerr){}
+    
 
     LogDuration(const std::string& id, std::ostream& flow = std::cerr )
         : id_(id), flow_(flow) {
     }
 
-    ~LogDuration() {
+    void Print(){
         using namespace std::chrono;
         using namespace std::literals;
 
         const auto end_time = Clock::now();
         const auto dur = end_time - start_time_;
-        flow_ << id_ << ": "s << duration_cast<milliseconds>(dur).count() << " ms"s << std::endl;
+
+        //flow_ << "\033[6;32mbold red text\033[0m\n" << std::endl;
+        flow_  << "\033[1;32m             ┌————————————————————————\n";
+        flow_ <<  "LOG >>       │" << id_ << ": "s << duration_cast<milliseconds>(dur).count() << " ms  \n"s;
+        flow_  << "             └————————————————————————\033[0m\n";
+        printed = true;
     }
+
+    ~LogDuration() {
+        if(!printed){
+            Print();
+        }
+    }
+
+    
 
 private:
     const std::string id_;
     const Clock::time_point start_time_ = Clock::now();
     std::ostream& flow_;
+    bool printed = false;
 };
