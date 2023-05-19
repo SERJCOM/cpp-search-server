@@ -37,6 +37,11 @@ int main() {
                 "curly cat curly tail"s,
                 "nasty dog with big eyes"s,
                 "nasty pigeon john"s,
+                "white cat and yellow hat"s,
+                "curly cat curly tail"s,
+                "nasty dog with big eyes"s,
+                "nasty pigeon john"s,
+                
             }
         ) {
             search_server.AddDocument(++id, text, DocumentStatus::ACTUAL, {1, 2});
