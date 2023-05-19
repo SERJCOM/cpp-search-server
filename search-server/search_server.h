@@ -180,38 +180,24 @@ template <typename DocumentPredicate, typename Policy>
     std::vector<Document> SearchServer::FindTopDocuments(Policy policy, std::string_view raw_query,
                                       DocumentPredicate document_predicate) const {
 
-    LOG_DURATION("SEARCHING.."s);
-
-    //if(std::is_same_v<std::decay_t<Policy>, std::execution::sequenced_policy>){
-
-    LogDuration pars("ParseQueryse");
     const auto query = ParseQuery(raw_query);
-    pars.Print();
-
-    LogDuration findall("FindAllDocuments");
-    //std::vector<std::vector<Document>> matched_documents(document_ids_.size());
-    //std::transform
+    
     auto matched_documents = FindAllDocuments(policy, query, document_predicate);
-    findall.Print();
-
-
-    {
-        LOG_DURATION("SORTING");
-        sort(policy, matched_documents.begin(), matched_documents.end(),
-                [](const Document& lhs, const Document& rhs) {
-                    if (std::abs(lhs.relevance - rhs.relevance) < 1e-6) {
-                        return lhs.rating > rhs.rating;
-                    } else {
-                        return lhs.relevance > rhs.relevance;
-                    }
-        });
-    }
+    
+    sort(policy, matched_documents.begin(), matched_documents.end(),
+            [](const Document& lhs, const Document& rhs) {
+                if (std::abs(lhs.relevance - rhs.relevance) < 1e-6) {
+                    return lhs.rating > rhs.rating;
+                } else {
+                    return lhs.relevance > rhs.relevance;
+                }
+    });
+    
     if (matched_documents.size() > MAX_RESULT_DOCUMENT_COUNT) {
         matched_documents.resize(MAX_RESULT_DOCUMENT_COUNT);
     }
 
     return matched_documents;
-
 
 }
 
@@ -249,7 +235,6 @@ std::vector<Document> SearchServer::FindAllDocuments(Policy policy, const Query&
                 const auto& document_data = documents_.at(document_id);
                 if (document_predicate(document_id, document_data.status, document_data.rating)) {
                     document_to_relevance[document_id].ref_to_value += term_freq * inverse_document_freq;
-                    //id_documents_here.insert(document_id);
                 }
             }
         }
@@ -260,17 +245,13 @@ std::vector<Document> SearchServer::FindAllDocuments(Policy policy, const Query&
         if (word_to_document_freqs_.count(word) ) {
             for (const auto [document_id, _] : word_to_document_freqs_.at(word)) {
                 document_to_relevance.erase(document_id);
-                //id_documents_here.erase(document_id);
             }
         }
    });
 
 
-    LogDuration temp_m("temp_map");
     auto temp_map = document_to_relevance.BuildOrdinaryMap();
-            
-    
-         
+        
     int size = temp_map.size();
          
     std::vector<Document> matched_documents(size);
@@ -282,8 +263,6 @@ std::vector<Document> SearchServer::FindAllDocuments(Policy policy, const Query&
     });
 
     matched_documents.resize(actual_size);
-
-    temp_m.Print();
 
     return matched_documents;
 }
