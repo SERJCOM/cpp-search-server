@@ -1,29 +1,66 @@
+#include "process_queries.h"
 #include "search_server.h"
-#include "request_queue.h"
-#include "paginator.h"
-#include "remove_duplicates.h"
-
+#include <execution>
+#include <iostream>
+#include <string>
+#include <vector>
 using namespace std;
-
-
+void PrintDocument(const Document& document) {
+    cout << "{ "s
+         << "document_id = "s << document.id << ", "s
+         << "relevance = "s << document.relevance << ", "s
+         << "rating = "s << document.rating << " }"s << endl;
+}
 int main() {
-    SearchServer search_server("and in at"s);
-    RequestQueue request_queue(search_server);
-    search_server.AddDocument(1, "curly cat curly tail"s, DocumentStatus::ACTUAL, {7, 2, 7});
-    search_server.AddDocument(2, "curly dog and fancy collar"s, DocumentStatus::ACTUAL, {1, 2, 3});
-    search_server.AddDocument(3, "big cat fancy collar "s, DocumentStatus::ACTUAL, {1, 2, 8});
-    search_server.AddDocument(4, "big dog sparrow Eugene"s, DocumentStatus::ACTUAL, {1, 3, 2});
-    search_server.AddDocument(5, "big dog sparrow Vasiliy"s, DocumentStatus::ACTUAL, {1, 1, 1});
-    // 1439 запросов с нулевым результатом
-    for (int i = 0; i < 1439; ++i) {
-        request_queue.AddFindRequest("empty request"s);
+    SearchServer search_server("and with"s);
+    int id = 0;
+    for(int i = 0; i < 10000; i++){
+        for (
+            const string& text : {
+                "white cat and yellow hat"s,
+                "curly cat curly tail"s,
+                "nasty dog with big eyes"s,
+                "nasty pigeon john"s,
+                "white cat and yellow hat"s,
+                "curly cat curly tail"s,
+                "nasty dog with big eyes"s,
+                "nasty pigeon john"s,
+                "white cat and yellow hat"s,
+                "curly cat curly tail"s,
+                "nasty dog with big eyes"s,
+                "nasty pigeon john"s,
+                "white cat and yellow hat"s,
+                "curly cat curly tail"s,
+                "nasty dog with big eyes"s,
+                "nasty pigeon john"s,
+                "white cat and yellow hat"s,
+                "curly cat curly tail"s,
+                "nasty dog with big eyes"s,
+                "nasty pigeon john"s,
+                "white cat and yellow hat"s,
+                "curly cat curly tail"s,
+                "nasty dog with big eyes"s,
+                "nasty pigeon john"s,
+                
+            }
+        ) {
+            search_server.AddDocument(++id, text, DocumentStatus::ACTUAL, {1, 2});
+        }
     }
-    // все еще 1439 запросов с нулевым результатом
-    request_queue.AddFindRequest("curly dog"s);
-    // новые сутки, первый запрос удален, 1438 запросов с нулевым результатом
-    request_queue.AddFindRequest("big collar"s);
-    // первый запрос удален, 1437 запросов с нулевым результатом
-    request_queue.AddFindRequest("sparrow"s);
-    cout << "Total empty requests: "s << request_queue.GetNoResultRequests() << endl;
+    cout << "ACTUAL by default:"s << endl;
+    // последовательная версия
+    for (const Document& document : search_server.FindTopDocuments("curly nasty cat"s)) {
+        PrintDocument(document);
+    }
+    cout << "BANNED:"s << endl;
+    // последовательная версия
+    for (const Document& document : search_server.FindTopDocuments(execution::seq, "curly nasty cat"s, DocumentStatus::BANNED)) {
+        PrintDocument(document);
+    }
+    cout << "Even ids:"s << endl;
+    // параллельная версия
+    for (const Document& document : search_server.FindTopDocuments(execution::par, "curly nasty cat"s, [](int document_id, DocumentStatus status, int rating) { return document_id % 2 == 0; })) {
+        PrintDocument(document);
+    }
     return 0;
 }
