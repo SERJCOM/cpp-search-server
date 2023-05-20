@@ -49,14 +49,6 @@ public:
         maps[maps_index].map.erase(key);
     }
 
-    size_t size(){
-        size_t ret = 0;
-        for(const maps_mutex& map_ : maps){
-            ret += map_.map.size();
-        }
-
-        return ret;
-    }
 
 
 private:

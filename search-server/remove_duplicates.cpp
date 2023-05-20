@@ -12,23 +12,22 @@ void RemoveDuplicates(SearchServer& search_server){
         std::map<std::string_view, double> word_to_freq = search_server.GetWordFrequencies(document_id); // O(logN)   
         std::vector<string_view> words_; 
         for(const auto& [word, freq] : word_to_freq){
-            //words_.push_back(word);
-            words_.insert(word);
+            words_.push_back(word);
         }
 
         bool match = false;
         
-        //for(const auto& words : words_id){
-            if(words_id.count(words_) > 0){
+        for(const auto& words : words_id){
+            if(words == words_){
                 match = true;
                 std::cout << "Found duplicate document id " << document_id << endl;
                 break;
             }
-        //}
+        }
         if(match == true){
             documents_id_to_delete.push_back(document_id);
         }
-        if(match == false) words_id.insert(words_);
+        if(match == false) words_id.push_back(words_);
     }
 
     for(int id : documents_id_to_delete){
@@ -36,4 +35,4 @@ void RemoveDuplicates(SearchServer& search_server){
         //cout << "удален айди " << id << endl;
     }
 }
-
+    
