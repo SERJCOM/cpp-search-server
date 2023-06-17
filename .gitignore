@@ -34,6 +34,6 @@
 
 CMakeLists.txt
 
-build
-.vscode
+/build
+/.vscode
 
