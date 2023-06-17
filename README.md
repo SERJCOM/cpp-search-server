@@ -1,7 +1,6 @@
-# multithreaded core of the search server
+# multithreaded search server
 
-## cpp-search-server
-## the final project in yandex practicum
+## cpp-search-server \nthe final project in yandex practicum
 
 ### search filters
 
@@ -9,6 +8,7 @@
 * by rating
 * by document number
 * you can use complex filters
+
 
 
 ![alt text](https://github.com/SERJCOM/cpp-search-server/blob/main/photos/Screenshot.png)
