@@ -1,1 +1,0 @@
-/usr/bin/c++ -g -rdynamic CMakeFiles/Debug.dir/document.cpp.o CMakeFiles/Debug.dir/main.cpp.o CMakeFiles/Debug.dir/read_input_functions.cpp.o CMakeFiles/Debug.dir/request_queue.cpp.o CMakeFiles/Debug.dir/search_server.cpp.o CMakeFiles/Debug.dir/string_processing.cpp.o CMakeFiles/Debug.dir/remove_duplicates.cpp.o -o Debug 

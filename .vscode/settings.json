@@ -1,8 +1,0 @@
-{
-    "files.associations": {
-        "*.py": "python",
-        "algorithm": "cpp",
-        "xlocale": "cpp"
-    },
-    "cmake.sourceDirectory": "/home/sergei/prog/practicum/cpp-search-server/search-server"
-}
