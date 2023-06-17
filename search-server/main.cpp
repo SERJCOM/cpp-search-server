@@ -5,12 +5,15 @@
 #include <string>
 #include <vector>
 using namespace std;
+
 void PrintDocument(const Document& document) {
     cout << "{ "s
          << "document_id = "s << document.id << ", "s
          << "relevance = "s << document.relevance << ", "s
          << "rating = "s << document.rating << " }"s << endl;
 }
+
+
 int main() {
     SearchServer search_server("and with"s);
     int id = 0;
@@ -47,20 +50,31 @@ int main() {
             search_server.AddDocument(++id, text, DocumentStatus::ACTUAL, {1, 2});
         }
     }
-    cout << "ACTUAL by default:"s << endl;
-    // последовательная версия
-    for (const Document& document : search_server.FindTopDocuments("curly nasty cat"s)) {
-        PrintDocument(document);
+
+    {
+        LOG_DURATION("SEQUENCE");
+
+        cout << "ACTUAL by default:"s << endl;
+        // последовательная версия
+        for (const Document& document : search_server.FindTopDocuments("curly nasty cat"s)) {
+            PrintDocument(document);
+        }
     }
-    cout << "BANNED:"s << endl;
-    // последовательная версия
-    for (const Document& document : search_server.FindTopDocuments(execution::seq, "curly nasty cat"s, DocumentStatus::BANNED)) {
-        PrintDocument(document);
+    {
+        LOG_DURATION("SEQUENCE WITH FILE STATUS");
+        cout << "BANNED:"s << endl;
+        // последовательная версия
+        for (const Document& document : search_server.FindTopDocuments(execution::seq, "curly nasty cat"s, DocumentStatus::BANNED)) {
+            PrintDocument(document);
+        }
     }
-    cout << "Even ids:"s << endl;
-    // параллельная версия
-    for (const Document& document : search_server.FindTopDocuments(execution::par, "curly nasty cat"s, [](int document_id, DocumentStatus status, int rating) { return document_id % 2 == 0; })) {
-        PrintDocument(document);
+    {
+        LOG_DURATION("PARALLEL WITH FILE FILTER");
+        cout << "Even ids:"s << endl;
+        // параллельная версия
+        for (const Document& document : search_server.FindTopDocuments(execution::par, "curly nasty cat"s, [](int document_id, DocumentStatus status, int rating) { return document_id % 2 == 0; })) {
+            PrintDocument(document);
+        }
     }
     return 0;
 }
