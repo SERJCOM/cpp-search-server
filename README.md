@@ -1,4 +1,4 @@
-# multithreaded core of the search server
+# MULTITHREADED CORE OF THE SEARCH SERVER
 
 ## the final project in yandex practicum
 
@@ -11,6 +11,7 @@
 * by rating
 * by document number
 * complex filters
+
 
 ### supports parallel and sequential search method
 
